@@ -1,16 +1,19 @@
 package see.evaluation.evaluators;
 
 import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.Maps;
 import see.evaluation.*;
 import see.evaluation.conversions.BuiltinConversions;
 import see.exceptions.EvaluationException;
 import see.exceptions.SeeRuntimeException;
+import see.parser.UserFunctionResolver;
 import see.parser.config.FunctionResolver;
 import see.parser.config.GrammarConfiguration;
 import see.parser.numbers.NumberFactory;
 import see.properties.ChainResolver;
 import see.tree.Node;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.collect.ImmutableClassToInstanceMap.builder;
@@ -29,8 +32,7 @@ public class SimpleEvaluator implements Evaluator {
     public static Evaluator fromConfig(GrammarConfiguration config) {
         return new SimpleEvaluator(
                 extractScope(config),
-                extractServices(config)
-        );
+                extractServices(config));
     }
 
     public static Scope extractScope(GrammarConfiguration config) {
@@ -44,16 +46,17 @@ public class SimpleEvaluator implements Evaluator {
                 .put(ValueProcessor.class, config.getValueProcessor())
                 .put(ToFunction.class, BuiltinConversions.all())
                 .put(FunctionResolver.class, config.getFunctions())
+                .put(UserFunctionResolver.class, config.getUserFunctionResolver())
                 .build();
     }
 
     /**
      * Evaluate tree with exception translation.
      * Subclasses of [@link EvaluationException] are passed as-is, others are wrapped in [@link EvaluationException].
-     * 
-     * @param tree tree to evaluate
+     *
+     * @param tree    tree to evaluate
      * @param initial evaluation context
-     * @param <T> return type
+     * @param <T>     return type
      * @return evaluation result
      * @throws EvaluationException on error during evaluation
      */
@@ -68,7 +71,9 @@ public class SimpleEvaluator implements Evaluator {
         }
     }
 
-    private Scope createLocalScope(Map<String, ?> initial) {
-        return defCapture(mutableOverride(functionScope, initial));
+    private Scope createLocalScope(Map<String, ?> initial) throws Exception {
+        HashMap<String,Object> overrides = Maps.newHashMap(initial);
+        overrides.putAll(((UserFunctionResolver)services.get(UserFunctionResolver.class)).getFunctions());
+        return defCapture(mutableOverride(functionScope, overrides));
     }
 }

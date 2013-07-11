@@ -1,6 +1,7 @@
 package see.parser.config;
 
 import see.evaluation.ValueProcessor;
+import see.parser.UserFunctionResolver;
 import see.parser.numbers.NumberFactory;
 import see.properties.ChainResolver;
 
@@ -9,12 +10,14 @@ public class GrammarConfiguration {
     private final NumberFactory numberFactory;
     private final ChainResolver properties;
     private final ValueProcessor valueProcessor;
+    private final UserFunctionResolver userFunctionResolver;
 
-    public GrammarConfiguration(FunctionResolver functions, NumberFactory numberFactory, ChainResolver properties, ValueProcessor processor) {
+    public GrammarConfiguration(FunctionResolver functions, NumberFactory numberFactory, ChainResolver properties, ValueProcessor processor, UserFunctionResolver userFunctionResolver) {
         this.functions = functions;
         this.numberFactory = numberFactory;
         this.properties = properties;
         this.valueProcessor = processor;
+        this.userFunctionResolver = userFunctionResolver;
     }
 
     public FunctionResolver getFunctions() {
@@ -31,5 +34,9 @@ public class GrammarConfiguration {
 
     public ValueProcessor getValueProcessor() {
         return valueProcessor;
+    }
+
+    public UserFunctionResolver getUserFunctionResolver() {
+        return userFunctionResolver;
     }
 }

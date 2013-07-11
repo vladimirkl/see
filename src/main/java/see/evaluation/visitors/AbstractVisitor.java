@@ -23,6 +23,7 @@ import see.exceptions.PropagatedException;
 import see.functions.ContextCurriedFunction;
 import see.functions.Property;
 import see.functions.VarArgFunction;
+import see.parser.UserFunctionResolver;
 import see.parser.config.FunctionResolver;
 import see.parser.grammar.PropertyAccess;
 import see.parser.grammar.PropertyDescriptor;
@@ -45,16 +46,21 @@ public abstract class AbstractVisitor implements Visitor {
         this.resolver = resolver;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <Arg, Result> Result visit(FunctionNode<Arg, Result> node) {
         try {
             List<Arg> evaluatedArgs = evaluateArgs(node.getArguments());
 
             FunctionResolver funcResolver = context.getServices().getInstance(FunctionResolver.class);
+            UserFunctionResolver userFunctionResolver = context.getServices().getInstance(UserFunctionResolver.class);
 
             // Note: evaluatedArgs are lazy
             ContextCurriedFunction<Arg,Result> objectObjectContextCurriedFunction =
                     (ContextCurriedFunction<Arg, Result>) funcResolver.get(node.getFunctionName());
+            if (objectObjectContextCurriedFunction == null)
+                objectObjectContextCurriedFunction = (ContextCurriedFunction<Arg, Result>) userFunctionResolver
+                        .getFunctions().get(node.getFunctionName());
             VarArgFunction<Arg, Result> partial = objectObjectContextCurriedFunction.apply(context);
             Result result = partial.apply(evaluatedArgs);
 

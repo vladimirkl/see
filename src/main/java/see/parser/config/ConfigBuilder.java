@@ -7,6 +7,8 @@ import see.evaluation.processors.NumberLifter;
 import see.functions.ContextCurriedFunction;
 import see.functions.PureFunction;
 import see.functions.VarArgFunction;
+import see.parser.NoOpUserFunctionResolver;
+import see.parser.UserFunctionResolver;
 import see.parser.numbers.BigDecimalFactory;
 import see.parser.numbers.NumberFactory;
 import see.properties.ChainResolver;
@@ -24,6 +26,8 @@ import static see.properties.PropertyResolvers.aggregate;
 public class ConfigBuilder {
     private Map<String, String> aliases;
     private Map<String, ContextCurriedFunction<Object, Object>> functions;
+
+    private UserFunctionResolver userFunctionResolver = new NoOpUserFunctionResolver();
     
     private List<? extends ValueProcessor> valueProcessors = of(new NumberLifter(getNumberFactoryReference()));
 
@@ -130,13 +134,18 @@ public class ConfigBuilder {
         return this;
     }
 
+    public ConfigBuilder setUserFunctionResolver(UserFunctionResolver userFunctionResolver) {
+        this.userFunctionResolver = userFunctionResolver;
+        return this;
+    }
+
     public GrammarConfiguration build() {
         return new GrammarConfiguration(
                 new FunctionResolver(functions, aliases),
                 numberFactory.get(),
                 propertyResolver,
-                concat(valueProcessors)
-        );
+                concat(valueProcessors),
+                userFunctionResolver);
     }
 
     /**
