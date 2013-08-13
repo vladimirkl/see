@@ -82,13 +82,16 @@ public class FunctionCreationTest {
     }
 
     @Test
-    public void testParameterImmutability() throws Exception {
-        try {
-            see.eval("function(a) { a = 42; } (9)");
-            fail("Exception expected");
-        } catch (SeeRuntimeException e) {
-            assertThat(e.getCause(), instanceOf(UnsupportedOperationException.class));
-        }
+    public void testParameterInLocalScope() throws Exception {
+        Object f = see.eval("func = function(a) { a = 42; }");
+
+        Node<Object> tree = see.parseExpressionList("a=9; func(a);");
+        Object result = see.evaluate(tree, of("func", f));
+        assertEquals(new BigDecimal(42), result);
+
+        tree = see.parseExpressionList("a=9; func(a); a;");
+        result = see.evaluate(tree, of("func", f));
+        assertEquals(new BigDecimal(9), result);
     }
 
     @Test

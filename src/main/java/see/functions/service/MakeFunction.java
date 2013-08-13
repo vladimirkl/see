@@ -32,7 +32,7 @@ import java.util.Map;
 
 import static see.evaluation.evaluators.SimpleContext.withVariables;
 import static see.evaluation.scopes.Scopes.defCapture;
-import static see.evaluation.scopes.Scopes.override;
+import static see.evaluation.scopes.Scopes.mutableOverride;
 
 /**
  * Function creation. Takes list of argument names and tree, returns function,
@@ -86,7 +86,7 @@ public class MakeFunction implements ContextCurriedFunction<Object, VarArgFuncti
                 scopeOverride.put(names.next(), args.next());
             }
 
-            Scope scope = defCapture(override(context.getScope(), scopeOverride));
+            Scope scope = defCapture(mutableOverride(context.getScope(), scopeOverride));
             return withVariables(context, scope);
         }
     }
