@@ -101,7 +101,7 @@ class AltExpressions(val numberFactory: NumberFactory,
       ((target: Node, trace, props) => propNode(target, props).withPos(trace))
   }
   def GetProperty = rule { EMPTY ~~> (fNode(".", _:Node))  }
-  def SimpleProperty = rule { "." ~ (Identifier ~> PropertyDescriptor.simple _) }.terminal
+  def SimpleProperty = rule { T(".") ~ (Identifier ~> PropertyDescriptor.simple _) }.terminal
   def IndexedProperty = rule { T("[") ~ RightExpression ~ T("]") ~~> PropertyDescriptor.indexed _ }
 
 

@@ -16,6 +16,9 @@ public class AddOrConcat implements VarArgFunction<Object, Object> {
     @Override
     public Object apply(@Nonnull List<Object> input) {
         Object firstElement = input.get(0);
+        if(firstElement == null){
+            throw new NullPointerException();
+        }
         if (firstElement instanceof BigDecimal) {
             //noinspection unchecked
             List<BigDecimal> numArgs = (List) input;

@@ -7,6 +7,7 @@ import org.junit.Test;
 import see.See;
 import see.parser.config.ConfigBuilder;
 import see.parser.numbers.LocalizedBigDecimalFactory;
+import see.tree.Node;
 
 import java.math.MathContext;
 import java.util.Locale;
@@ -52,5 +53,23 @@ public class AltSeparatorsTest {
     @Test
     public void testMapLiterals() throws Exception {
         assertEquals(ImmutableMap.of("a", valueOf(42.9), "b", valueOf(9.5)), see.eval("{a:42,9;b:9,5}"));
+    }
+
+    @Test
+    public void testPropertyAccess() throws Exception {
+        Node<?> tree = see.parseExpressionList("c = {a:42,9;b:9,5}; c \n\r. \r\na;");
+        assertEquals(valueOf(42.9), see.evaluate(tree));
+
+        tree = see.parseExpressionList("c = {a:42,9;b:9,5}; c   .a;");
+        assertEquals(valueOf(42.9), see.evaluate(tree));
+
+        tree = see.parseExpressionList("c = {a:42,9;b:9,5}; c\t.\ta;");
+        assertEquals(valueOf(42.9), see.evaluate(tree));
+
+        tree = see.parseExpressionList("c = {a:42,9;b:9,5}; c.   a;");
+        assertEquals(valueOf(42.9), see.evaluate(tree));
+
+        tree = see.parseExpressionList("c = {a:42,9;b:9,5}; c    .   a;");
+        assertEquals(valueOf(42.9), see.evaluate(tree));
     }
 }
