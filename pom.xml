@@ -3,7 +3,7 @@
 
     <groupId>see</groupId>
     <artifactId>see</artifactId>
-    <version>3.5.4-SNAPSHOT</version>
+    <version>3.5.4</version>
     <packaging>jar</packaging>
 
     <!--Name subject to change-->
@@ -160,4 +160,18 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+    <distributionManagement>
+        <repository>
+            <id>deployment</id>
+            <name>SBRF Repository</name>
+            <url>http://sbrf-scm.luxoft.com:8080/nexus/content/repositories/releases</url>
+            <layout>default</layout>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>SBRF Snapshots</name>
+            <url>http://sbrf-scm.luxoft.com:8080/nexus/content/repositories/snapshots</url>
+            <layout>default</layout>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
